@@ -1,0 +1,77 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Payment {
+  amount       Float?
+  consultant   Consultant?        @relation(fields: [consultantId], references: [id])
+  consultantId String?
+  createdAt    DateTime           @default(now())
+  id           String             @id @default(cuid())
+  method       String?
+  status       EnumPaymentStatus?
+  updatedAt    DateTime           @updatedAt
+  user         User?              @relation(fields: [userId], references: [id])
+  userId       String?
+}
+
+model Consultant {
+  createdAt      DateTime              @default(now())
+  email          String?
+  id             String                @id @default(cuid())
+  name           String?
+  payments       Payment[]
+  specialization String?
+  status         EnumConsultantStatus?
+  updatedAt      DateTime              @updatedAt
+}
+
+model Analytics {
+  createdAt   DateTime  @default(now())
+  date        DateTime?
+  id          String    @id @default(cuid())
+  metricName  String?
+  metricValue Int?
+  updatedAt   DateTime  @updatedAt
+}
+
+model Account {
+  accountType EnumAccountAccountType?
+  createdAt   DateTime                @default(now())
+  id          String                  @id @default(cuid())
+  suspended   Boolean?
+  updatedAt   DateTime                @updatedAt
+  user        User?                   @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model User {
+  accounts  Account[]
+  createdAt DateTime  @default(now())
+  email     String?   @unique
+  firstName String?
+  id        String    @id @default(cuid())
+  lastName  String?
+  password  String
+  payments  Payment[]
+  roles     Json
+  updatedAt DateTime  @updatedAt
+  username  String    @unique
+}
+
+enum EnumPaymentStatus {
+  Option1
+}
+
+enum EnumConsultantStatus {
+  Option1
+}
+
+enum EnumAccountAccountType {
+  Option1
+}
